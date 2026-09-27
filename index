@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBA Statistics Calculator</title>
+<style>
+:root{
+  --navy:#14213d; --blue:#2563eb; --purple:#7c3aed; --pink:#ec4899;
+  --teal:#0d9488; --green:#16a34a; --orange:#f97316; --red:#dc2626;
+  --bg:#f4f7fb; --card:#fff; --text:#172033; --muted:#64748b;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#eef2ff,#fdf2f8 45%,#ecfeff);color:var(--text)}
+header{background:linear-gradient(135deg,#111827,#312e81,#7c3aed);color:white;padding:34px 20px;text-align:center}
+header h1{margin:0;font-size:clamp(28px,5vw,46px)}
+header p{margin:10px auto 0;max-width:850px;color:#e0e7ff}
+.container{max-width:1250px;margin:auto;padding:22px}
+.tabs{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px}
+.tab{border:0;padding:12px 16px;border-radius:12px;background:white;color:#334155;font-weight:700;cursor:pointer;box-shadow:0 3px 12px #00000010}
+.tab.active{background:linear-gradient(135deg,var(--blue),var(--purple));color:white}
+.panel{display:none}.panel.active{display:block}
+.card{background:rgba(255,255,255,.96);border-radius:20px;padding:22px;margin-bottom:18px;box-shadow:0 8px 30px #1e293b14;border:1px solid #e2e8f0}
+.card h2{margin-top:0;color:var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
+label{font-weight:700;font-size:14px;color:#334155}
+textarea,input,select{width:100%;margin-top:7px;border:2px solid #e2e8f0;border-radius:11px;padding:11px;font-size:15px;outline:none;background:#fff}
+textarea{min-height:92px;resize:vertical}
+textarea:focus,input:focus,select:focus{border-color:#818cf8}
+button.action{border:0;border-radius:11px;padding:11px 17px;color:white;font-weight:800;cursor:pointer;margin-top:12px;background:linear-gradient(135deg,var(--blue),var(--purple))}
+button.secondary{background:#475569}
+button.green{background:linear-gradient(135deg,#059669,#16a34a)}
+button.orange{background:linear-gradient(135deg,#ea580c,#f59e0b)}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:16px}
+.result{padding:14px;border-radius:13px;background:#f8fafc;border-left:5px solid var(--blue)}
+.result b{display:block;color:#475569;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.result span{font-size:20px;font-weight:800;color:#111827}
+.note{padding:12px 14px;border-radius:12px;background:#eff6ff;color:#1e3a8a;margin-top:12px}
+.warn{background:#fff7ed;color:#9a3412}
+.formula{font-family:Georgia,serif;background:#f8fafc;padding:12px;border-radius:10px;color:#334155}
+table{width:100%;border-collapse:collapse;margin-top:14px}
+th,td{padding:9px;border-bottom:1px solid #e2e8f0;text-align:left}
+th{background:#eef2ff;color:#312e81}
+.footer{text-align:center;padding:25px;color:#64748b}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#ede9fe;color:#6d28d9;font-size:12px;font-weight:800}
+@media(max-width:600px){.container{padding:12px}.card{padding:16px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="badge">MBA • FINANCE • BUSINESS ANALYTICS</div>
+  <h1>📊 MBA Statistics Calculator</h1>
+  <p>Central Tendency • Dispersion • Skewness • Kurtosis • Correlation • Regression</p>
+</header>
+
+<div class="container">
+<div class="tabs">
+<button class="tab active" onclick="showTab('central',this)">📌 Central Tendency</button>
+<button class="tab" onclick="showTab('dispersion',this)">📏 Dispersion & Outliers</button>
+<button class="tab" onclick="showTab('shape',this)">📐 Skewness & Kurtosis</button>
+<button class="tab" onclick="showTab('corr',this)">🔗 Correlation</button>
+<button class="tab" onclick="showTab('reg',this)">📈 Regression</button>
+</div>
+
+<section id="central" class="panel active">
+<div class="card">
+<h2>📌 Measures of Central Tendency</h2>
+<p>Enter numerical observations separated by commas, spaces, or new lines.</p>
+<textarea id="data1" placeholder="Example: 10, 12, 15, 15, 18, 20, 22"></textarea>
+<button class="action" onclick="calcCentral()">Calculate Central Tendency</button>
+<div id="centralOut" class="results"></div>
+<div id="centralExtra"></div>
+</div>
+<div class="card">
+<h2>Percentile / Quartile / Decile Calculator</h2>
+<div class="grid">
+<label>Position type
+<select id="posType"><option value="percentile">Percentile</option><option value="quartile">Quartile</option><option value="decile">Decile</option></select></label>
+<label>Position number<input id="posNum" type="number" value="75" min="0"></label>
+</div>
+<button class="action" onclick="calcPosition()">Calculate Position</button>
+<div id="posOut" class="results"></div>
+</div>
+</section>
+
+<section id="dispersion" class="panel">
+<div class="card">
+<h2>📏 Dispersion, Variability & Outliers</h2>
+<textarea id="data2" placeholder="Example: 12, 15, 18, 19, 20, 21, 35"></textarea>
+<button class="action" onclick="calcDispersion()">Calculate Dispersion</button>
+<div id="dispOut" class="results"></div>
+<div id="outlierOut"></div>
+</div>
+<div class="card">
+<h2>💼 Business Interpretation</h2>
+<div class="note"><b>Range:</b> Simple measure of spread. Useful for quickly comparing the highest and lowest business values.</div>
+<div class="note"><b>Standard deviation:</b> Shows how far observations typically vary from the mean.</div>
+<div class="note"><b>Coefficient of variation:</b> CV = SD / Mean × 100. Useful for comparing relative risk/variability between datasets with different means.</div>
+<div class="note warn"><b>Outlier:</b> An unusually high or low observation. This calculator uses the IQR rule: below Q1 − 1.5×IQR or above Q3 + 1.5×IQR.</div>
+</div>
+</section>
+
+<section id="shape" class="panel">
+<div class="card">
+<h2>📐 Skewness & Kurtosis</h2>
+<textarea id="data3" placeholder="Example: 5, 7, 8, 9, 10, 12, 20"></textarea>
+<button class="action orange" onclick="calcShape()">Calculate Skewness & Kurtosis</button>
+<div id="shapeOut" class="results"></div>
+<div id="shapeText" class="note"></div>
+</div>
+<div class="card">
+<h2>📚 Business Meaning</h2>
+<p><b>Skewness:</b> describes the asymmetry of a distribution. Positive skew means a longer right tail; negative skew means a longer left tail.</p>
+<p><b>Karl Pearson:</b> commonly uses (Mean − Mode) / SD. If mode is not reliable, (3 × (Mean − Median)) / SD can be used.</p>
+<p><b>Bowley's coefficient:</b> (Q3 + Q1 − 2Median) / (Q3 − Q1).</p>
+<p><b>Kurtosis:</b> describes tail/peakedness characteristics. This calculator reports Pearson kurtosis β₂ = μ₄/μ₂² and excess kurtosis = β₂ − 3.</p>
+</div>
+</section>
+
+<section id="corr" class="panel">
+<div class="card">
+<h2>🔗 Correlation Analysis</h2>
+<div class="grid">
+<label>X values<textarea id="x1" placeholder="10, 12, 15, 18, 20"></textarea></label>
+<label>Y values<textarea id="y1" placeholder="20, 25, 29, 35, 40"></textarea></label>
+</div>
+<button class="action" onclick="calcPearson()">Karl Pearson Correlation</button>
+<div id="pearsonOut" class="results"></div>
+</div>
+
+<div class="card">
+<h2>🏷️ Rank Correlation</h2>
+<div class="grid">
+<label>Rank / X values<textarea id="rx"></textarea></label>
+<label>Rank / Y values<textarea id="ry"></textarea></label>
+</div>
+<button class="action green" onclick="calcSpearman()">Spearman Rank Correlation</button>
+<div id="rankOut" class="results"></div>
+</div>
+
+<div class="card">
+<h2>🎯 Partial & Multiple Correlation</h2>
+<div class="grid">
+<label>X values<textarea id="px"></textarea></label>
+<label>Y values<textarea id="py"></textarea></label>
+<label>Z (control variable)<textarea id="pz"></textarea></label>
+</div>
+<button class="action" onclick="calcPartial()">Calculate Partial Correlation rXY.Z</button>
+<div id="partialOut" class="results"></div>
+<p class="formula">Partial correlation: r<sub>XY.Z</sub> = (r<sub>XY</sub> − r<sub>XZ</sub>r<sub>YZ</sub>) / √[(1−r<sub>XZ</sub>²)(1−r<sub>YZ</sub>²)]</p>
+</div>
+</section>
+
+<section id="reg" class="panel">
+<div class="card">
+<h2>📈 Simple Linear Regression</h2>
+<div class="grid">
+<label>Independent X<textarea id="sx"></textarea></label>
+<label>Dependent Y<textarea id="sy"></textarea></label>
+</div>
+<button class="action" onclick="simpleRegression()">Estimate Regression</button>
+<div id="simpleRegOut" class="results"></div>
+</div>
+
+<div class="card">
+<h2>🧮 Multiple Regression (Y on X₁ and X₂)</h2>
+<div class="grid">
+<label>Y<textarea id="my"></textarea></label>
+<label>X₁<textarea id="mx1"></textarea></label>
+<label>X₂<textarea id="mx2"></textarea></label>
+</div>
+<button class="action green" onclick="multipleRegression()">Calculate Multiple Regression</button>
+<div id="multiRegOut" class="results"></div>
+</div>
+
+<div class="card">
+<h2>〰️ Basic Non-Linear Regression</h2>
+<p>Quadratic model: <b>Y = a + bX + cX²</b></p>
+<div class="grid">
+<label>X<textarea id="nx"></textarea></label>
+<label>Y<textarea id="ny"></textarea></label>
+</div>
+<button class="action orange" onclick="quadraticRegression()">Estimate Quadratic Regression</button>
+<div id="nonlinearOut" class="results"></div>
+</div>
+</section>
+</div>
+
+<div class="footer">Built for MBA students • Use it for statistics practice, business analysis and classroom assignments.</div>
+
+<script>
+const $=id=>document.getElementById(id);
+function nums(id){return $(id).value.split(/[,\\s]+/).map(Number).filter(Number.isFinite)}
+function fmt(x){return Number.isFinite(x)?x.toFixed(4):"—"}
+function mean(a){return a.reduce((s,x)=>s+x,0)/a.length}
+function median(a){let b=[...a].sort((x,y)=>x-y),n=b.length,m=Math.floor(n/2);return n%2?b[m]:(b[m-1]+b[m])/2}
+function quantile(a,p){let b=[...a].sort((x,y)=>x-y);if(!b.length)return NaN;if(p<=0)return b[0];if(p>=1)return b[b.length-1];let pos=(b.length-1)*p,lo=Math.floor(pos),h=Math.ceil(pos);return b[lo]+(b[h]-b[lo])*(pos-lo)}
+function variance(a,sample=false){let m=mean(a);return a.reduce((s,x)=>s+(x-m)**2,0)/(a.length-(sample?1:0))}
+function sd(a){return Math.sqrt(variance(a))}
+function mode(a){let c=new Map();a.forEach(x=>c.set(x,(c.get(x)||0)+1));let mx=Math.max(...c.values());if(mx<=1)return "No unique mode";return [...c].filter(([k,v])=>v===mx).map(([k])=>k).join(", ")}
+function box(items){return items.map(x=>`<div class="result"><b>${x[0]}</b><span>${x[1]}</span></div>`).join("")}
+function showTab(id,btn){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}
+
+function calcCentral(){
+ let a=nums("data1"); if(a.length<1)return alert("Enter data first.");
+ let m=mean(a),med=median(a),s=sd(a), sorted=[...a].sort((x,y)=>x-y);
+ $("centralOut").innerHTML=box([["Count",a.length],["Mean",fmt(m)],["Median",fmt(med)],["Mode",mode(a)],["Minimum",fmt(sorted[0])],["Maximum",fmt(sorted.at(-1))],["Q1",fmt(quantile(a,.25))],["Q2",fmt(med)],["Q3",fmt(quantile(a,.75))]]);
+ $("centralExtra").innerHTML=`<div class="note"><b>Business use:</b> Mean summarizes average performance; median is useful when data contain extreme values; mode identifies the most frequent value.</div>`;
+}
+function calcPosition(){
+ let a=nums("data1"),type=$("posType").value,k=Number($("posNum").value),p=type==="percentile"?k/100:type==="quartile"?k/4:k/10;
+ if(!a.length||p<0||p>1)return alert("Enter valid data and position.");
+ $("posOut").innerHTML=box([[type.toUpperCase(),k],["Proportion",fmt(p)],["Estimated value",fmt(quantile(a,p))]]);
+}
+
+function calcDispersion(){
+ let a=nums("data2");if(a.length<2)return alert("Enter at least 2 observations.");
+ let mn=Math.min(...a),mx=Math.max(...a),m=mean(a),v=variance(a),s=Math.sqrt(v),cv=Math.abs(m)>1e-12?s/Math.abs(m)*100:NaN,q1=quantile(a,.25),q3=quantile(a,.75),iqr=q3-q1,lo=q1-1.5*iqr,hi=q3+1.5*iqr,outs=a.filter(x=>x<lo||x>hi);
+ $("dispOut").innerHTML=box([["Range",fmt(mx-mn)],["Variance",fmt(v)],["Standard deviation",fmt(s)],["Coefficient of variation",fmt(cv)+"%"],["Q1",fmt(q1)],["Q3",fmt(q3)],["IQR",fmt(iqr)],["Lower fence",fmt(lo)],["Upper fence",fmt(hi)]]);
+ $("outlierOut").innerHTML=`<div class="note ${outs.length?'warn':''}"><b>Outliers:</b> ${outs.length?outs.map(fmt).join(", "):"None detected by the 1.5×IQR rule."}</div>`;
+}
+
+function calcShape(){
+ let a=nums("data3");if(a.length<3)return alert("Enter at least 3 observations.");
+ let m=mean(a),s=sd(a),med=median(a),mo=mode(a),pearson2=3*(m-med)/s;
+ let q1=quantile(a,.25),q3=quantile(a,.75),bow=(q3+q1-2*med)/(q3-q1);
+ let mu2=a.reduce((z,x)=>z+(x-m)**2,0)/a.length,mu4=a.reduce((z,x)=>z+(x-m)**4,0)/a.length;
+ let beta=mu4/(mu2**2),excess=beta-3;
+ $("shapeOut").innerHTML=box([["Karl Pearson (mean-median)",fmt(pearson2)],["Bowley's skewness",fmt(bow)],["Pearson kurtosis β₂",fmt(beta)],["Excess kurtosis",fmt(excess)]]);
+ let st=pearson2>0?"positively/right skewed":pearson2<0?"negatively/left skewed":"approximately symmetric";
+ $("shapeText").innerHTML=`<b>Interpretation:</b> The Pearson skewness indicator suggests the dataset is <b>${st}</b>. Kurtosis above 3 indicates heavier tails than the normal benchmark; below 3 indicates lighter tails.`;
+}
+
+function corr(a,b){let n=a.length,ma=mean(a),mb=mean(b),num=0,dx=0,dy=0;for(let i=0;i<n;i++){let x=a[i]-ma,y=b[i]-mb;num+=x*y;dx+=x*x;dy+=y*y}return num/Math.sqrt(dx*dy)}
+function check2(a,b){return a.length===b.length&&a.length>=2}
+function calcPearson(){
+ let a=nums("x1"),b=nums("y1");if(!check2(a,b))return alert("X and Y must have the same number of observations.");
+ let r=corr(a,b);$("pearsonOut").innerHTML=box([["Pearson r",fmt(r)],["r² (shared variation)",fmt(r*r)],["Direction",r>0?"Positive":r<0?"Negative":"None"],["Strength",Math.abs(r)>=.7?"Strong":Math.abs(r)>=.4?"Moderate":"Weak"]]);
+}
+function ranks(a){let idx=a.map((v,i)=>[v,i]).sort((p,q)=>p[0]-q[0]),r=Array(a.length);let i=0;while(i<a.length){let j=i;while(j+1<a.length&&idx[j+1][0]===idx[i][0])j++;let avg=(i+j+2)/2;for(let k=i;k<=j;k++)r[idx[k][1]]=avg;i=j+1}return r}
+function calcSpearman(){
+ let a=nums("rx"),b=nums("ry");if(!check2(a,b))return alert("Both series must have the same number of observations.");
+ let r=corr(ranks(a),ranks(b));$("rankOut").innerHTML=box([["Spearman ρ",fmt(r)],["Direction",r>0?"Positive":r<0?"Negative":"None"],["Rank association",Math.abs(r)>=.7?"Strong":Math.abs(r)>=.4?"Moderate":"Weak"]]);
+}
+function calcPartial(){
+ let x=nums("px"),y=nums("py"),z=nums("pz");if(x.length!==y.length||x.length!==z.length||x.length<3)return alert("X, Y and Z must have equal length (minimum 3).");
+ let rxy=corr(x,y),rxz=corr(x,z),ryz=corr(y,z),r=(rxy-rxz*ryz)/Math.sqrt((1-rxz**2)*(1-ryz**2));
+ $("partialOut").innerHTML=box([["rXY",fmt(rxy)],["rXZ",fmt(rxz)],["rYZ",fmt(ryz)],["Partial rXY.Z",fmt(r)]]);
+}
+
+function simpleRegression(){
+ let x=nums("sx"),y=nums("sy");if(!check2(x,y))return alert("X and Y must have equal lengths.");
+ let mx=mean(x),my=mean(y),b=corr(x,y)*sd(y)/sd(x),a=my-b*mx,r=corr(x,y),r2=r*r;
+ $("simpleRegOut").innerHTML=box([["Intercept a",fmt(a)],["Slope b",fmt(b)],["Equation",`Y = ${fmt(a)} + (${fmt(b)})X`],["R",fmt(r)],["R²",fmt(r2)]]);
+}
+function matSolve(A,b){
+ let n=b.length,M=A.map((r,i)=>r.slice().concat(b[i]));
+ for(let k=0;k<n;k++){let p=k;for(let i=k+1;i<n;i++)if(Math.abs(M[i][k])>Math.abs(M[p][k]))p=i;[M[k],M[p]]=[M[p],M[k]];if(Math.abs(M[k][k])<1e-12)throw Error("Singular");for(let i=k+1;i<n;i++){let f=M[i][k]/M[k][k];for(let j=k;j<=n;j++)M[i][j]-=f*M[k][j]}}
+ let x=Array(n);for(let i=n-1;i>=0;i--){let s=M[i][n];for(let j=i+1;j<n;j++)s-=M[i][j]*x[j];x[i]=s/M[i][i]}return x
+}
+function multipleRegression(){
+ let y=nums("my"),x1=nums("mx1"),x2=nums("mx2");if(y.length!==x1.length||y.length!==x2.length||y.length<3)return alert("Y, X1 and X2 must have equal lengths.");
+ let X=y.map((_,i)=>[1,x1[i],x2[i]]),A=Array.from({length:3},()=>Array(3).fill(0)),B=Array(3).fill(0);
+ for(let i=0;i<y.length;i++){for(let j=0;j<3;j++){B[j]+=X[i][j]*y[i];for(let k=0;k<3;k++)A[j][k]+=X[i][j]*X[i][k]}}
+ let c=matSolve(A,B),myy=mean(y),pred=X.map(r=>r[0]*c[0]+r[1]*c[1]+r[2]*c[2]),sst=y.reduce((s,v)=>s+(v-myy)**2,0),sse=y.reduce((s,v,i)=>s+(v-pred[i])**2,0),r2=1-sse/sst,R=Math.sqrt(Math.max(0,r2));
+ $("multiRegOut").innerHTML=box([["Intercept",fmt(c[0])],["β₁ (X₁)",fmt(c[1])],["β₂ (X₂)",fmt(c[2])],["Equation",`Y = ${fmt(c[0])} + ${fmt(c[1])}X₁ + ${fmt(c[2])}X₂`],["Multiple R",fmt(R)],["R²",fmt(r2)]]);
+}
+function quadraticRegression(){
+ let x=nums("nx"),y=nums("ny");if(x.length!==y.length||x.length<3)return alert("X and Y must have equal lengths and at least 3 observations.");
+ let X=x.map(v=>[1,v,v*v]),A=Array.from({length:3},()=>Array(3).fill(0)),B=Array(3).fill(0);
+ for(let i=0;i<y.length;i++){for(let j=0;j<3;j++){B[j]+=X[i][j]*y[i];for(let k=0;k<3;k++)A[j][k]+=X[i][j]*X[i][k]}}
+ let c=matSolve(A,B),m=mean(y),pred=X.map(r=>r[0]*c[0]+r[1]*c[1]+r[2]*c[2]),sst=y.reduce((s,v)=>s+(v-m)**2,0),sse=y.reduce((s,v,i)=>s+(v-pred[i])**2,0),r2=1-sse/sst;
+ $("nonlinearOut").innerHTML=box([["a",fmt(c[0])],["b",fmt(c[1])],["c",fmt(c[2])],["Equation",`Y = ${fmt(c[0])} + ${fmt(c[1])}X + (${fmt(c[2])})X²`],["R²",fmt(r2)]]);
+}
+</script>
+</body>
+</html>
